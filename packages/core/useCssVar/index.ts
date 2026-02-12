@@ -10,6 +10,7 @@ export interface UseCssVarOptions extends ConfigurableWindow {
   initialValue?: string
   /**
    * Use MutationObserver to monitor variable changes
+   * el.style.setProperty(color, 'blue')有这种操作，需要赋值为true，检测变化，更新值，否则不会更新值
    * @default false
    */
   observe?: boolean
@@ -65,7 +66,8 @@ export function useCssVar(
   watch(
     [elRef, () => toValue(prop)],
     (_, old) => {
-      // 在变化前先移除旧的 CSS 变量
+      // 在变化前先移除旧的 CSS 变量 在demo中的例子二 不会给变量清除掉（先清除，然后更新的时候模版又设置上了），但是如果是
+      // elv?.value?.style.setProperty('--color-two', 'red')这种自己添加的会清除掉
       if (old[0] && old[1])
         old[0].style.removeProperty(old[1])
       // 然后更新新的 CSS 变量
@@ -85,6 +87,7 @@ export function useCssVar(
       if (el?.style && raw_prop) {
         if (val == null)
           // 如果值为 null 或 undefined，则移除该 CSS 属性
+        // 这个属性是通过代码添加的elv?.value?.style.setProperty('--color-two', 'red')
           el.style.removeProperty(raw_prop)
         else
           // 否则设置该 CSS 属性的值
