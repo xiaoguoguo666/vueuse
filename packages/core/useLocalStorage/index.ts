@@ -18,11 +18,36 @@ export function useLocalStorage<T = unknown>(key: MaybeRefOrGetter<string>, init
  * @param initialValue
  * @param options
  */
+/**
+ * 响应式的 localStorage 操作 Hook
+ *
+ * 封装了 useStorage，专门用于操作 localStorage
+ * 提供了类型安全的 localStorage 读写能力
+ *
+ * @template T - 存储值的类型
+ * @param key - 存储的键名，支持响应式引用
+ * @param initialValue - 初始值，支持响应式引用
+ * @param options - 配置选项
+ * @returns 可移除的响应式引用，包含 remove 方法用于删除存储项
+ *
+ * @example
+ * ```ts
+ * // 基本用法
+ * const counter = useLocalStorage('counter', 0)
+ *
+ * // 对象类型
+ * const user = useLocalStorage('user', { name: 'John', age: 30 })
+ *
+ * ```
+ */
 export function useLocalStorage<T extends(string | number | boolean | object | null)>(
   key: MaybeRefOrGetter<string>,
   initialValue: MaybeRefOrGetter<T>,
   options: UseStorageOptions<T> = {},
 ): RemovableRef<any> {
+  // 解构配置选项，使用默认的 window 对象
   const { window = defaultWindow } = options
+
+  // 调用通用的 useStorage，指定使用 localStorage 作为存储后端
   return useStorage(key, initialValue, window?.localStorage, options)
 }
